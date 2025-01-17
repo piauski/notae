@@ -1,0 +1,8 @@
+# Node modules
+node_modules/
+
+# TypeScript build output
+dist/
+
+# TypeScript specific files
+*.tsbuildinfo

@@ -1,0 +1,26 @@
+{
+  "name": "note-taking-app",
+  "version": "1.0.0",
+  "main": "dist/routes/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/routes/index.js",
+    "dev": "concurrently \"tsc --watch\" \"ts-node-dev --respawn --transpile-only src/routes/index.ts\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.7",
+    "concurrently": "^9.1.2",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "mysql": "^2.18.1"
+  }
+}
