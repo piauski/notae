@@ -6,3 +6,4 @@ dist/
 
 # TypeScript specific files
 *.tsbuildinfo
+package-lock.json
