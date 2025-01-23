@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 const DB_NAME = "mynotes";
 
 // Create a connection pool
-const pool = mysql
+export const pool = mysql
     .createPool({
         host: "localhost",
         user: "app_user",
@@ -21,7 +21,7 @@ const createDatabase = async () => {
     }
 };
 
-const setDefaultDatabase = async (database: string) => {
+const setDefaultDatabase = async (database) => {
     try {
         await pool.query(`USE ${database}`);
         console.log(`Switched to database: ${database}`);
@@ -72,5 +72,3 @@ VALUES (?, ?, ?, ?)
     .catch((error) => {
         console.error("Error during database setup:", error);
     });
-
-export { pool };

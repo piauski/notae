@@ -1,0 +1,40 @@
+:root {
+    --editor-max-height: 80vh;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+.container {
+    display: flex;
+    gap: 20px;
+    width: 80%;
+}
+
+#markdown-editor {
+    resize: none;
+}
+textarea,
+.preview {
+    width: 50%;
+    height: var(--editor-max-height);
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: 0;
+}
+#markdown-preview {
+    background-color: #f9f9f9;
+    overflow-y: auto;
+    max-height: var(--editor-max-height);
+    margin-top: 0;
+}
+
+#markdown-preview p {
+    margin-top: 0;
+}
