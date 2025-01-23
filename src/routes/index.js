@@ -25,6 +25,19 @@ app.get("/api/notes", async (_req, res) => {
     }
 });
 
+app.delete("/api/notes/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        console.log(`Deleting note with id: ${id}`);
+        const result = await pool.query("DELETE FROM notes WHERE id = ?", [id]);
+        console.log("Result:", result);
+        res.status(204).send();
+    } catch (error) {
+        console.error("Error deleting note: ", error);
+        res.status(500).send("Error deleting note");
+    }
+})
+
 // Fallback route to serve index.html
 app.get("/", (_req, res) => {
     res.sendFile(path.join(__dirname, "..", "public", "index.html"));

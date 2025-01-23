@@ -5,14 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown Editor</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
 </head>
 <body>
-  <h1>Markdown Editor</h1>
-  <div class="container">
-    <textarea id="markdown-editor" placeholder="Write your Markdown here..."></textarea>
-    <div id="markdown-preview" class="preview"></div>
+  <div class="main-container">
+    <div class="notes-container">
+      <div id="notes-list-header">
+        <h1>Notes</h1>
+        <button id="note-new">+</button>
+      </div>
+        <ul id="notes-list"></ul>
+    </div>
+    <div class="container">
+        <textarea id="markdown-editor" placeholder="Write your note here..."></textarea>
+        <div id="markdown-preview" class="preview"></div>
+    </div>
   </div>
-  <button id="save-button">Save as Markdown</button>
+  <div id="note-delete-confirmation-popup" class="popup">
+  <div class="popup-content">
+    <h2 id="note-delete-confirmation-popup-title">Delete Note?</h2>
+    <p>Are you sure you want to delete this note?</p>
+    <button id="note-delete-confirm">Delete</button>
+    <button id="note-delete-cancel">Cancel</button>
+  </div>
+</div>
+  
 
   <script src="client.js" type="module"></script>
 </body>
