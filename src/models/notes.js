@@ -82,6 +82,7 @@ export async function getAllNotes() {
  */
 export async function updateNoteByIdWithContent(noteId, newContent) {
     // Title is always the first line, stripped, of the content of the note.
+    console.log(`updating note: ${noteId}, ${newContent}`)
     const newTitle = newContent
             .split("\n")[0]
             .replace(/^#+\s*/, "")

@@ -14,6 +14,7 @@ const noteDeleteConfirm = document.getElementById("note-delete-confirm");
 const noteDeleteCancel = document.getElementById("note-delete-cancel");
 
 const noteNew = document.getElementById("note-new");
+const darkModeSwitch = document.getElementById("dark-mode-switch");
 
 const options = {
     headerIds: false,
@@ -73,6 +74,7 @@ markdownEditor.addEventListener("input", () => {
         // TODO: create new note or default to note on top of list.
         // For now, disable the editor.
         markdownEditor.disabled = true;
+        markdownEditor.placeholder = "Select a note...";
     }
 });
 
@@ -115,12 +117,18 @@ function createNoteListEntry(note) {
             true,
         );
         }*/
+        const selectedNotes = document.querySelectorAll(".note-selected");
+        for (const selectedNote of selectedNotes) {
+            selectedNote.classList.remove("note-selected");
+        }
+        noteLink.classList.add("note-selected");
         // Get clicked note content and update the preview.
         axios
             .get(`/api/notes/${note.id}`)
             .then((response) => {
                 const newNote = response.data;
                 markdownEditor.disabled = false;
+                markdownEditor.placeholder = "Write your note here...";
                 markdownEditor.value = newNote.content;
                 markdownEditor.setAttribute("data-current-note-id", newNote.id);
                 updateMarkdownPreview();
@@ -168,6 +176,7 @@ noteDeleteConfirm.addEventListener("click", async () => {
             markdownEditor.setAttribute("data-current-note-id", null);
             markdownEditor.value = "";
             markdownEditor.disabled = true;
+            markdownEditor.placeholder = "Select a note...";
             updateMarkdownPreview();
             
             note.parentNode.removeChild(note);
@@ -182,9 +191,19 @@ noteDeleteCancel.addEventListener("click", () => {
     noteDeleteConfirmationPopup.classList.remove("show");
 });
 
+darkModeSwitch.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    if (document.body.classList.contains("dark-mode")) {
+        darkModeSwitch.textContent = "☀️";
+    } else {
+        darkModeSwitch.textContent = "🌙";
+    }
+});
+
 window.onload = () => {
     markdownEditor.value = "";
     markdownEditor.disabled = true;
+    markdownEditor.placeholder = "Select a note...";
     updateMarkdownPreview();
     
     axios

@@ -10,6 +10,11 @@ body {
     padding: 0px;
 }
 
+.dark-mode {
+    background-color: #181818;
+    color: #fff;
+}
+
 h1 {
     margin: 0;
     margin-bottom: 10px;
@@ -21,7 +26,7 @@ h1 {
     height: var(--editor-max-height);
     padding: 10px;
     font-size: 16px;
-    border: 1px solid #ccc;
+    border: 0px;
     border-radius: 4px;
     margin-right: 10px;
 }
@@ -35,17 +40,27 @@ h1 {
 #markdown-editor {
     resize: none;
     margin-right: 5px;
+    color: #000;
 }
 
+.dark-mode #markdown-editor {
+    color: #fff;
+}
 #markdown-editor,
 #markdown-preview {
     width: 100%;
     height: var(--editor-max-height);
     padding: 10px;
     font-size: 16px;
-    border: 1px solid #ccc;
+    border: 0px;
+    background-color: #eee;
     border-radius: 4px;
     margin: 0;
+}
+
+.dark-mode #markdown-editor,
+.dark-mode #markdown-preview {
+    background-color: #202020;
 }
 
 #markdown-preview table,
@@ -58,7 +73,6 @@ td {
 }
 
 #markdown-preview {
-    background-color: #f9f9f9;
     overflow-y: auto;
     max-height: var(--editor-max-height);
     margin-left: 5px;
@@ -90,11 +104,50 @@ td {
     margin: 0;
 }
 
-#note-new {
+#notes-list-header button {
     display: inline-block;
     aspect-ratio: 1; /* Make the element square */
-    height: fit-content; /* Make the height adjust to the width */
+    height: 30px; /* Make the height adjust to the width */
     width: auto; /* Make the width fit the content */
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #ddd;
+    border: 0px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.dark-mode #notes-list-header button {
+    color: #fff;
+    background-color: #202020;
+}
+
+#notes-list-header button:hover {
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+}
+
+.dark-mode #notes-list-header button:hover {
+    background-color: #202020;
+    box-shadow: 0px 0px 10px rgba(255,255,255,0.5);
+}
+
+#notes-list-header #dark-mode-switch {
+    background-color: #181818;
+}
+
+#notes-list-header #dark-mode-switch:hover {
+    background-color: #202020;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+}
+
+.dark-mode #notes-list-header #dark-mode-switch {
+    background-color: #fff;
+}
+
+.dark-mode #notes-list-header #dark-mode-switch:hover {
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(255,255,255,0.5);
 }
 
 #notes-list {
@@ -109,15 +162,45 @@ td {
     display: flex;
     flex-direction: column;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 0px;
+    background-color: #eee;
     border-radius: 4px;
     position: relative;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+.dark-mode .note-link {
+    color: #fff;
+    background-color: #202020;
+}
+
+.note-link.note-selected {
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+}
+
+.dark-mode .note-link.note-selected {
+    background-color: #181818;
+    box-shadow: 0px 0px 10px rgba(255,255,255,0.5);
+}
+
+.note-link:hover {
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+}
+
+.dark-mode .note-link:hover {
+    background-color: #181818;
+    box-shadow: 0px 0px 10px rgba(255,255,255,0.5);
 }
 
 .note-title {
     font-weight: bold;
     font-size: 18px;
     margin-top: 0;
+    word-break: break-word;
+    white-space: pre-wrap; 
 }
 
 .note-date {
@@ -137,7 +220,7 @@ td {
     padding: 5px;
     border-radius: 5px;
     background-color: #f01;
-    border: 1px solid #c00;
+    border: 0px;
     cursor: pointer;
     font-size: 14px;
     font-weight: bold;
@@ -147,6 +230,42 @@ td {
 
 .note-link:hover .note-delete {
     display: block;
+}
+
+#note-delete-confirmation-popup-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#note-delete-confirm, #note-delete-cancel {
+    background-color: #eee;
+    border: 0px;
+    border-radius: 5px;
+    padding: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-weight: bold;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#note-delete-cancel:hover {
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+}
+
+
+#note-delete-confirm {
+    background-color: #f01;
+    color: #fff;
+    cursor:pointer;
+}
+
+.note-delete:hover, #note-delete-confirm:hover {
+    color: #a10;
+    background-color: #f42;
+    box-shadow: 0px 0px 10px rgba(155,0,10,0.5);
 }
 
 .popup {
