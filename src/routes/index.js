@@ -1,8 +1,22 @@
+/**
+ * Notes API Routes
+ * ----------------
+ * File: index.js
+ *
+ * This file defines API routes for managing notes, including
+ * creating, reading, updating, and deleting notes.
+ *
+ * Created: 2025-01-24
+ * Updated: 2025-01-24
+ * Author: Patryk Pisarski
+ */
+
 import express from "express";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 
 import { pool } from "../config/db.js";
+import * as notes from "../models/notes.js";
 
 const app = express();
 const PORT = 3000;
@@ -15,10 +29,18 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 // Middleware
 app.use(express.json());
 
-// Routes
+// -- Routes -------------------------------------------------------------------
+
+/**
+ * Retrieves a list of all notes.
+ *
+ * @route GET /api/notes
+ * @returns {200 OK} A JSON array of notes.
+ * @throws {500 Internal Server Error} If an error occurs while fetching notes.
+ */
 app.get("/api/notes", async (_req, res) => {
     try {
-        const [rows] = await pool.query("SELECT * FROM notes");
+        const [rows] = await notes.getAllNotes();
         res.json(rows);
     } catch (error) {
         console.error("Error fetching notes:", error);
@@ -26,23 +48,15 @@ app.get("/api/notes", async (_req, res) => {
     }
 });
 
-// Delete a note by id
-app.delete("/api/notes/:id", async (req, res) => {
-    try {
-        const id = req.params.id;
-        console.log(`Deleting note with id: ${id}`);
-        const [result] = await pool.query("DELETE FROM notes WHERE id = ?", [
-            id,
-        ]);
-        console.log("Result:", result);
-        res.status(204).send();
-    } catch (error) {
-        console.error("Error deleting note: ", error);
-        res.status(500).send("Error deleting note");
-    }
-});
+/**
+ * Creates a new note.
+ *
+ * @route POST /api/notes/new
+ * @param {string} content - The content of the note.
+ * @returns {201 Created} The created note.
+ * @throws {500 Internal Server Error} If an error occurs during creation.
+ */
 
-// Create a new note
 app.post("/api/notes/new", async (req, res) => {
     try {
         const { content } = req.body;
@@ -50,51 +64,26 @@ app.post("/api/notes/new", async (req, res) => {
             .split("\n")[0]
             .replace(/^#+\s*/, "")
             .trim();
-        const noteId = uuidv4();
-        const insertNoteQuery = `
-INSERT INTO notes (id, title, content)
-VALUES (?, ?, ?)
-`;
-        try {
-            const [result] = await pool.execute(insertNoteQuery, [
-                noteId,
-                title,
-                content,
-            ]);
-            console.log("Note saved successfully: ", result);
-
-            const getNoteQuery = `
-SELECT *
-FROM notes
-WHERE id = ?
-`;
-            const [noteRows] = await pool.execute(getNoteQuery, [noteId]);
-            const createdNote = noteRows[0];
-
-            res.status(201).json(createdNote);
-        } catch (error) {
-            console.error("Error saving note: ", error);
-        }
+        const createdNote = await notes.createNote(title, content);
+        res.status(201).json(createdNote);
     } catch (error) {
         console.error("Error creating note: ", error);
         res.status(500).send("Error creating note");
     }
 });
 
-// Fetch a note by id
+/**
+ * Retrieves a note by its ID.
+ *
+ * @route GET /api/notes/:id
+ * @param {string} id - The ID of the note to retrieve.
+ * @returns {200 OK} The retrieved note.
+ * @throws {500 Internal Server Error} If an error occurs during retrieval.
+ */
 app.get("/api/notes/:id", async (req, res) => {
     try {
         const noteId = req.params.id;
-        console.log("Getting note by id: ", noteId);
-        const selectNoteQuery = `
-SELECT *
-FROM notes
-WHERE id = ?
-`;
-        const [noteRows] = await pool.execute(selectNoteQuery, [noteId]);
-
-        const note = noteRows[0];
-        console.log(note);
+        const note = await notes.getNoteById(noteId);
         res.json(note);
     } catch (error) {
         console.error("Error fetching note: ", error);
@@ -102,35 +91,20 @@ WHERE id = ?
     }
 });
 
-// Update a note by id and content.
+/**
+ * Updates a note by its ID and content.
+ *
+ * @route PATCH /api/notes/:id
+ * @param {string} id - The ID of the note to update.
+ * @param {string} content - The new content of the note.
+ * @returns {200 OK} The updated note.
+ * @throws {500 Internal Server Error} If an error occurs during update.
+ */
 app.patch("/api/notes/:id", async (req, res) => {
     try {
         const noteId = req.params.id;
         const newContent = req.body.content;
-        const newTitle = newContent
-            .split("\n")[0]
-            .replace(/^#+\s*/, "")
-            .trim();
-
-        console.log(
-            `Updating NoteID: ${noteId} with title: '${newTitle}' and content: '${newContent}'`,
-        );
-        const updateNoteQuery = `
-      UPDATE notes
-      SET title = ?, content = ?, updated_at = NOW()
-      WHERE id = ?
-    `;
-
-        await pool.execute(updateNoteQuery, [newTitle, newContent, noteId]);
-
-        const getNoteQuery = `
-SELECT *
-FROM notes
-WHERE id = ?
-`;
-        const [noteRows] = await pool.execute(getNoteQuery, [noteId]);
-        const note = noteRows[0];
-        console.log("Updated note retrieved: ", note);
+        const note = await notes.updateNoteByIdWithContent(noteId, newContent);
         res.json(note);
     } catch (error) {
         console.error("Error updating note:", error);
@@ -138,10 +112,33 @@ WHERE id = ?
     }
 });
 
+/**
+ * Deletes a note by its ID.
+ *
+ * @route DELETE /api/notes/:id
+ * @param {string} id - The ID of the note to delete.
+ * @returns {204 No Content} If the note is deleted successfully.
+ * @throws {500 Internal Server Error} If an error occurs during deletion.
+ */
+app.delete("/api/notes/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        console.log(`Deleting note with id: ${id}`);
+        await notes.deleteNoteById(id);
+        res.status(204).send();
+    } catch (error) {
+        console.error("Error deleting note: ", error);
+        res.status(500).send("Error deleting note");
+    }
+});
+
+
 // Fallback route to serve index.html
 app.get("/", (_req, res) => {
     res.sendFile(path.join(__dirname, "..", "public", "index.html"));
 });
+
+// -- END...Routes -------------------------------------------------------------
 
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);

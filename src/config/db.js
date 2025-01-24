@@ -1,3 +1,16 @@
+/**
+ * Database Connection And Setup
+ * -----------------------------
+ * File: db.js
+ * 
+ * This file defines the database connection pool and setup functions
+ * for the application.
+ *
+ * Created: 2025-01-17
+ * Updated: 2025-01-24
+ * Author: Patryk Pisarski
+ */
+
 import * as mysql from "mysql2";
 
 const DB_NAME = "notes";
