@@ -15,7 +15,7 @@ h1 {
     margin-bottom: 10px;
 }
 
-.notes-container {
+.notes-list-container {
     width: 10%;
     overflow-y: auto;
     height: var(--editor-max-height);
@@ -26,7 +26,7 @@ h1 {
     margin-right: 10px;
 }
 
-.container {
+.editor-container {
     display: flex;
     flex-direction: row;
     width: 90%;
@@ -37,8 +37,8 @@ h1 {
     margin-right: 5px;
 }
 
-textarea,
-.preview {
+#markdown-editor,
+#markdown-preview {
     width: 100%;
     height: var(--editor-max-height);
     padding: 10px;
@@ -46,6 +46,15 @@ textarea,
     border: 1px solid #ccc;
     border-radius: 4px;
     margin: 0;
+}
+
+#markdown-preview table,
+th,
+td {
+    border-style: solid;
+    border-width: 1px;
+    border-collapse: collapse;
+    padding: 5px;
 }
 
 #markdown-preview {

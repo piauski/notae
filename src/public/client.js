@@ -29,6 +29,7 @@ function updateMarkdownPreview() {
 
 let timeoutId;
 
+// TODO: Reorder note list by most recently updated.
 function updateNoteContentById(id, content, force = false) {
     if (force) {
         clearTimeout(timeoutId);
@@ -46,7 +47,7 @@ function sendUpdateRequest(id, content) {
         .patch(`/api/notes/${id}`, { content: content })
         .then((response) => {
             const note = response.data;
-            console.log("Note updated successfully!", note);
+            console.log("Note updated successfully: ", note);
             const noteEntry = document.querySelector(
                 `.note-entry[data-note-id="${note.id}"]`,
             );
@@ -63,12 +64,15 @@ function sendUpdateRequest(id, content) {
 markdownEditor.addEventListener("input", () => {
     const currentNoteId = markdownEditor.getAttribute("data-current-note-id");
     if (currentNoteId) {
+        updateMarkdownPreview();
         updateNoteContentById(
             markdownEditor.getAttribute("data-current-note-id"),
             markdownEditor.value,
         );
     } else {
-        console.log("TODO: create new note or default to note on top of list.");
+        // TODO: create new note or default to note on top of list.
+        // For now, disable the editor.
+        markdownEditor.disabled = true;
     }
 });
 
@@ -99,21 +103,28 @@ function createNoteListEntry(note) {
     noteListItem.appendChild(noteLink);
 
     noteLink.addEventListener("click", async () => {
+        // FIXME: This seems to crash the entire server. Must be the
+        // way I get the noteId or something?
         // Save current note content.
+        /*const currentNote =  markdownEditor.getAttribute("data-current-note-id");
+        if (currentNote) {
+            console.log("Saving current note content");
         updateNoteContentById(
-            markdownEditor.getAttribute("data-current-note-id"),
+            currentNote,
             markdownEditor.value,
             true,
         );
+        }*/
         // Get clicked note content and update the preview.
         axios
             .get(`/api/notes/${note.id}`)
             .then((response) => {
-                const note = response.data;
-                markdownEditor.value = note.content;
-                markdownEditor.setAttribute("data-current-note-id", note.id);
+                const newNote = response.data;
+                markdownEditor.disabled = false;
+                markdownEditor.value = newNote.content;
+                markdownEditor.setAttribute("data-current-note-id", newNote.id);
                 updateMarkdownPreview();
-                updateNoteContentById(note.id, note.content);
+                updateNoteContentById(newNote.id, newNote.content);
             })
             .catch((error) => {
                 console.error("Error retrieving note: ", error);
@@ -131,7 +142,6 @@ function createNoteListEntry(note) {
 
 noteNew.addEventListener("click", async () => {
     try {
-        console.log("Attempting to create new note.");
         const response = await axios.post("/api/notes/new", { content: "" });
 
         const createdNote = response.data;
@@ -143,16 +153,22 @@ noteNew.addEventListener("click", async () => {
     }
 });
 
+// FIXME: Sometimes the server gets 500'd and crashes.
 noteDeleteConfirm.addEventListener("click", async () => {
     const notesToDelete = document.querySelectorAll(
         ".note-mark-for-delete[data-note-id]",
     );
     notesToDelete.forEach(async (note) => {
         const noteId = note.getAttribute("data-note-id");
-        console.log(`Attempting to delete note by id: ${noteId}`);
         try {
             await axios.delete(`/api/notes/${noteId}`);
             console.log(`Successfully deleted note by id: ${noteId}`);
+            
+            markdownEditor.setAttribute("data-current-note-id", null);
+            markdownEditor.value = "";
+            markdownEditor.disabled = true;
+            updateMarkdownPreview();
+            
             note.parentNode.removeChild(note);
             noteDeleteConfirmationPopup.classList.remove("show");
         } catch (error) {
@@ -166,14 +182,14 @@ noteDeleteCancel.addEventListener("click", () => {
 });
 
 window.onload = () => {
-    const markdownText = markdownEditor.value;
-    preview.innerHTML = marked(markdownText, options);
-
+    markdownEditor.value = "";
+    markdownEditor.disabled = true;
+    updateMarkdownPreview();
+    
     axios
         .get("/api/notes")
         .then((response) => {
             const notes = response.data;
-            console.log(notes);
             notes.forEach(createNoteListEntry);
         })
         .catch((error) => {

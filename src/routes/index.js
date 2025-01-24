@@ -31,7 +31,9 @@ app.delete("/api/notes/:id", async (req, res) => {
     try {
         const id = req.params.id;
         console.log(`Deleting note with id: ${id}`);
-        const result = await pool.query("DELETE FROM notes WHERE id = ?", [id]);
+        const [result] = await pool.query("DELETE FROM notes WHERE id = ?", [
+            id,
+        ]);
         console.log("Result:", result);
         res.status(204).send();
     } catch (error) {
@@ -90,8 +92,9 @@ FROM notes
 WHERE id = ?
 `;
         const [noteRows] = await pool.execute(selectNoteQuery, [noteId]);
-        const note = noteRows[0];
 
+        const note = noteRows[0];
+        console.log(note);
         res.json(note);
     } catch (error) {
         console.error("Error fetching note: ", error);
@@ -104,13 +107,14 @@ app.patch("/api/notes/:id", async (req, res) => {
     try {
         const noteId = req.params.id;
         const newContent = req.body.content;
-        console.log(`Updating NoteID: ${noteId} with content: ${newContent}`);
         const newTitle = newContent
             .split("\n")[0]
             .replace(/^#+\s*/, "")
             .trim();
-        console.log("Updating note with new content:", newContent);
 
+        console.log(
+            `Updating NoteID: ${noteId} with title: '${newTitle}' and content: '${newContent}'`,
+        );
         const updateNoteQuery = `
       UPDATE notes
       SET title = ?, content = ?, updated_at = NOW()
@@ -126,7 +130,7 @@ WHERE id = ?
 `;
         const [noteRows] = await pool.execute(getNoteQuery, [noteId]);
         const note = noteRows[0];
-        console.log(note);
+        console.log("Updated note retrieved: ", note);
         res.json(note);
     } catch (error) {
         console.error("Error updating note:", error);
