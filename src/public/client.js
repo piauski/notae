@@ -54,7 +54,7 @@ function sendUpdateRequest(id, content) {
             const noteTitle = noteEntry.querySelector(".note-title");
             const noteDate = noteEntry.querySelector(".note-date");
             noteTitle.textContent = note.title;
-            noteDate.textContent = `Update: ${note.updated_at}`;
+            noteDate.textContent = `Updated: ${note.updated_at}`;
         })
         .catch((error) => {
             console.error("Error updating note:", error);
@@ -132,7 +132,7 @@ function createNoteListEntry(note) {
     });
 
     noteDelete.addEventListener("click", () => {
-        noteDeleteConfirmationPopupTitle.textContent = `Delete Note '${note.title}'?`;
+        noteDeleteConfirmationPopupTitle.textContent = note.title == '' ? 'Delete Empty Note?' : `Delete Note '${note.title}'?`;
         noteListItem.classList.add("note-mark-for-delete");
         noteDeleteConfirmationPopup.classList.add("show");
     });
@@ -140,6 +140,7 @@ function createNoteListEntry(note) {
     notesList.prepend(noteListItem);
 }
 
+// TODO: style this button
 noteNew.addEventListener("click", async () => {
     try {
         const response = await axios.post("/api/notes/new", { content: "" });
