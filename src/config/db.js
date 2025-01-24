@@ -1,7 +1,6 @@
 import * as mysql from "mysql2";
-import { v4 as uuidv4 } from "uuid";
 
-const DB_NAME = "mynotes";
+const DB_NAME = "notes";
 
 // Create a connection pool
 export const pool = mysql
@@ -37,7 +36,6 @@ CREATE TABLE IF NOT EXISTS notes (
 id CHAR(36) PRIMARY KEY, -- UUID as a 36-character string
 title VARCHAR(255),
 content TEXT,
-file_path VARCHAR(255),
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )
@@ -51,24 +49,6 @@ updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 createDatabase()
     .then(() => setDefaultDatabase(DB_NAME))
     .then(() => createTable())
-    .then(async () => {
-        const noteId = uuidv4();
-        const insertNoteQuery = `
-INSERT INTO notes (id, title, content, file_path)
-VALUES (?, ?, ?, ?)
-`;
-        try {
-            const [result] = await pool.execute(insertNoteQuery, [
-                noteId,
-                "My note",
-                "This is the content of my first note",
-                "/path/to/file.txt",
-            ]);
-            console.log("Note saved successfully: ", result);
-        } catch (error) {
-            console.error("Error saving note: ", error);
-        }
-    })
     .catch((error) => {
         console.error("Error during database setup:", error);
     });
